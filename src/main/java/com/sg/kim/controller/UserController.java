@@ -60,8 +60,19 @@ public class UserController {
 	private UserService userService;
 	@PostMapping("/auth/insertUser")
 	public @ResponseBody ResponseDTO<?> insertUsers(@RequestBody User user){
-		userService.insertUser(user);
-		return new ResponseDTO<>(HttpStatus.OK.value(), user.getUsername() + "님 회원가입 성공했어요");
+//		userService.insertUser(user);
+//		return new ResponseDTO<>(HttpStatus.OK.value(), user.getUsername() + "님 회원가입 성공했어요");
+		
+		User findUser = userService.getUser(user.getUsername());
+		
+		if(findUser.getUsername() == null) {
+			// 같은 username 회원없음, 회원가입진행
+			userService.insertUser(user);
+			return new ResponseDTO<>(HttpStatus.OK.value(), user.getUsername() + "님 회원가입 성공했어요");
+		}else {
+			// 중복된 username있음, 에러메시지표시
+			return new ResponseDTO<>(HttpStatus.BAD_REQUEST.value(), user.getUsername() + "님은 이미 회원입니다");
+		}
 }
 }
 
